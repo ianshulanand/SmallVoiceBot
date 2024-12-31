@@ -2,3 +2,4 @@ gTTS
 SpeechRecognition
 playsound
 times
+pyaudio
