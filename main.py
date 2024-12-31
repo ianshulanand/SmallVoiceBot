@@ -7,6 +7,12 @@ import playsound
 import os
 import random
 
+#import os
+import numpy as np
+#import streamlit as st
+from io import BytesIO
+import streamlit.components.v1 as components
+
 #from streamlit_mic_recorder import st_mic_recorder  # Import mic-recorder
 #from streamlit_webrtc import webrtc_streamer, WebRtcMode, AudioProcessorBase
 
@@ -25,8 +31,9 @@ def st_audiorec():
 
     # get parent directory relative to current directory
     parent_dir = os.path.dirname(os.path.abspath(__file__))
+    st.write(parent_dir)
     # Custom REACT-based component for recording client audio in browser
-    build_dir = os.path.join(parent_dir, "frontend/build")
+    build_dir = os.path.join(parent_dir, "")
     # specify directory and initialize st_audiorec object functionality
     st_audiorec = components.declare_component("st_audiorec", path=build_dir)
 
@@ -124,7 +131,7 @@ def respond(voice_data):
 st.title("Erza Voice Assistant")
 # TITLE and Creator information
 st.markdown('Implemented by '
-        '[Stefan Rummer](https://www.linkedin.com/in/stefanrmmr/) - '
+        '[AA](https://www.linkedin.com/in/stefanrmmr/) - '
         'view project source code on '
                 
         '[GitHub](https://github.com/stefanrmmr/streamlit-audio-recorder)')
