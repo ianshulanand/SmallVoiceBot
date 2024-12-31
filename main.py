@@ -8,7 +8,7 @@ import os
 import random
 
 #from streamlit_mic_recorder import st_mic_recorder  # Import mic-recorder
-from streamlit_webrtc import webrtc_streamer, WebRtcMode
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, AudioProcessorBase
 from io import BytesIO
 
 from time import ctime
@@ -17,13 +17,23 @@ from gtts import gTTS
 # Initialize recognizer
 r = sr.Recognizer()
 
+# Initialize audio data storage
+audio_data = None
+
+# Audio processor class for streamlit-webrtc
+class AudioProcessor(AudioProcessorBase):
+    def recv(self, frame):
+        global audio_data
+        # This function gets called with the microphone stream in each frame
+        audio_data = frame.to_bytes()  # Convert the frame to bytes
+        return frame
+    
 def erza_speak(audio_string):
     tts = gTTS(text=audio_string, lang='en')
     r = random.randint(1, 1000000)
     #audio_file = 'audio' +str(r) + '.mp3'
     audio_file = f'audio{r}.mp3'
     tts.save(audio_file)
-    #playsound.playsound(audio_file)
 
     # Streamlit's built-in audio player
     audio_bytes = open(audio_file, 'rb').read()
@@ -32,50 +42,23 @@ def erza_speak(audio_string):
     print(audio_string)
     os.remove(audio_file)
     
-# def record_audio(ask = False):
-#     with sr.Microphone() as source:
-#         if ask:
-#             erza_speak(ask)
-#         audio = r.listen(source)
-#         voice_data = ''
-#         try:
-#             voice_data = r.recognize_google(audio, language="en-uk")
-#         except sr.UnknownValueError:
-#             erza_speak('Sorry, I did not get that')
-#         except sr.RequestError:
-#             erza_speak('sorry my speach service is down')
-#         return voice_data
 
+
+# Function to process the recorded audio and convert it into text using Google Speech Recognition
 def record_audio():
-    # # Streamlit's mic-recorder for microphone input
-    # audio_data = st_mic_recorder(record_audio=True, key="mic-recorder")
-    
-    # if audio_data is not None:
-    #     # Convert the audio data into an AudioFile object for speech recognition
-    #     audio_file = sr.AudioFile(audio_data)
-    #     with audio_file as source:
-    #         audio = r.record(source)  # Record the audio from the file
-    #         try:
-    #             voice_data = r.recognize_google(audio, language="en-uk")
-    #             st.write("You said: ", voice_data)
-    #             return voice_data
-    #         except sr.UnknownValueError:
-    #             st.write("Sorry, I did not get that.")
-    #         except sr.RequestError:
-    #             st.write("Sorry, my speech service is down.")
-
-    # return ""
-    # Convert audio data to an AudioFile object
-    with sr.AudioFile(BytesIO(audio_data)) as source:
-        audio = r.record(source)
-        try:
-            voice_data = r.recognize_google(audio, language="en-uk")
-            st.write("You said: ", voice_data)
-            return voice_data
-        except sr.UnknownValueError:
-            st.write("Sorry, I did not get that.")
-        except sr.RequestError:
-            st.write("Sorry, my speech service is down.")
+    global audio_data
+    if audio_data:
+        # Convert audio data to an AudioFile object
+        with sr.AudioFile(BytesIO(audio_data)) as source:
+            audio = r.record(source)
+            try:
+                voice_data = r.recognize_google(audio, language="en-uk")
+                st.write("You said: ", voice_data)
+                return voice_data
+            except sr.UnknownValueError:
+                st.write("Sorry, I did not get that.")
+            except sr.RequestError:
+                st.write("Sorry, my speech service is down.")
     return ""
     
 def respond(voice_data):
@@ -99,15 +82,23 @@ def respond(voice_data):
         details = handler.getDetails()
         erza_speak("I'm from " + details.country_name)
     if 'go to sleep' in voice_data:
-        erza_speak('bye')
+        erza_speak('Goodbye!')
         exit()
 
 # Main loop
 st.title("Erza Voice Assistant")
-st.write("How can I help you?")
+st.write("Click the button to start the voice assistant")
+
+# Start the webrtc streamer for capturing audio
+webrtc_streamer(key="example", mode=WebRtcMode.SENDRECV, audio_processor_factory=AudioProcessor)
+
 
 time.sleep(1)
-erza_speak('How can I help you?')
-while 1:  
-    voice_data = record_audio()
-    respond(voice_data)
+
+# Start interaction on button click
+if st.button("Start Voice Assistant"):
+    erza_speak('How can I help you?')
+    while 1:  
+        voice_data = record_audio()
+        if voice_data:
+            respond(voice_data)
