@@ -128,7 +128,7 @@ st.markdown('Implemented by '
         'view project source code on '
                 
         '[GitHub](https://github.com/stefanrmmr/streamlit-audio-recorder)')
-    st.write('\n\n')
+st.write('\n\n')
 st.write("Click the button to start the voice assistant")
 
 # Start the webrtc streamer for capturing audio
