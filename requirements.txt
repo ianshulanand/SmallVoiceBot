@@ -1,0 +1,4 @@
+gTTS
+SpeechRecognition
+playsound
+times
