@@ -7,3 +7,4 @@ playsound==1.2.2  # (Optional, if you still need it for local use)
 times
 ipinfo==3.0.0
 altair==4.0.1 #For streamlit-mic-recorder
+audio-recorder-streamlit
