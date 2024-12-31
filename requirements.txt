@@ -1,5 +1,6 @@
 streamlit>= 0.63
-streamlit-mic-recorder==0.0.8
+streamlit-webrtc
+# streamlit-mic-recorder==0.0.8
 speechrecognition
 gTTS==2.3.1
 playsound==1.2.2  # (Optional, if you still need it for local use)
