@@ -132,7 +132,7 @@ st.markdown('Implemented by '
 st.write("Click the button to start the voice assistant")
 
 # Start the webrtc streamer for capturing audio
-webrtc_streamer(key="example", mode=WebRtcMode.SENDRECV, audio_processor_factory=AudioProcessor)
+#webrtc_streamer(key="example", mode=WebRtcMode.SENDRECV, audio_processor_factory=AudioProcessor)
 
 
 time.sleep(1)
