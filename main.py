@@ -8,7 +8,8 @@ import os
 import random
 
 #from streamlit_mic_recorder import st_mic_recorder  # Import mic-recorder
-from streamlit_webrtc import webrtc_streamer, WebRtcMode, AudioProcessorBase
+#from streamlit_webrtc import webrtc_streamer, WebRtcMode, AudioProcessorBase
+
 from io import BytesIO
 
 from time import ctime
@@ -20,6 +21,34 @@ r = sr.Recognizer()
 # Initialize audio data storage
 audio_data = None
 
+def st_audiorec():
+
+    # get parent directory relative to current directory
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    # Custom REACT-based component for recording client audio in browser
+    build_dir = os.path.join(parent_dir, "frontend/build")
+    # specify directory and initialize st_audiorec object functionality
+    st_audiorec = components.declare_component("st_audiorec", path=build_dir)
+
+    # Create an instance of the component: STREAMLIT AUDIO RECORDER
+    raw_audio_data = st_audiorec()  # raw_audio_data: stores all the data returned from the streamlit frontend
+    wav_bytes = None                # wav_bytes: contains the recorded audio in .WAV format after conversion
+
+    # the frontend returns raw audio data in the form of arraybuffer
+    # (this arraybuffer is derived from web-media API WAV-blob data)
+
+    if isinstance(raw_audio_data, dict):  # retrieve audio data
+        with st.spinner('retrieving audio-recording...'):
+            ind, raw_audio_data = zip(*raw_audio_data['arr'].items())
+            ind = np.array(ind, dtype=int)  # convert to np array
+            raw_audio_data = np.array(raw_audio_data)  # convert to np array
+            sorted_ints = raw_audio_data[ind]
+            stream = BytesIO(b"".join([int(v).to_bytes(1, "big") for v in sorted_ints]))
+            # wav_bytes contains audio data in byte format, ready to be processed further
+            wav_bytes = stream.read()
+
+    return wav_bytes
+    
 # Audio processor class for streamlit-webrtc
 class AudioProcessor(AudioProcessorBase):
     def recv(self, frame):
@@ -46,7 +75,13 @@ def erza_speak(audio_string):
 
 # Function to process the recorded audio and convert it into text using Google Speech Recognition
 def record_audio():
-    global audio_data
+
+    # TUTORIAL: How to use STREAMLIT AUDIO RECORDER?
+    # by calling this function an instance of the audio recorder is created
+    # once a recording is completed, audio data will be saved to audio_data
+
+    audio_data = st_audiorec() # tadaaaa! yes, that's it! :D
+
     if audio_data:
         # Convert audio data to an AudioFile object
         with sr.AudioFile(BytesIO(audio_data)) as source:
@@ -87,6 +122,13 @@ def respond(voice_data):
 
 # Main loop
 st.title("Erza Voice Assistant")
+# TITLE and Creator information
+st.markdown('Implemented by '
+        '[Stefan Rummer](https://www.linkedin.com/in/stefanrmmr/) - '
+        'view project source code on '
+                
+        '[GitHub](https://github.com/stefanrmmr/streamlit-audio-recorder)')
+    st.write('\n\n')
 st.write("Click the button to start the voice assistant")
 
 # Start the webrtc streamer for capturing audio
