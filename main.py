@@ -7,7 +7,10 @@ import playsound
 import os
 import random
 
-from streamlit_mic_recorder import st_mic_recorder  # Import mic-recorder
+#from streamlit_mic_recorder import st_mic_recorder  # Import mic-recorder
+from streamlit_webrtc import webrtc_streamer, WebRtcMode
+from io import BytesIO
+
 from time import ctime
 from gtts import gTTS
 
@@ -44,23 +47,35 @@ def erza_speak(audio_string):
 #         return voice_data
 
 def record_audio():
-    # Streamlit's mic-recorder for microphone input
-    audio_data = st_mic_recorder(record_audio=True, key="mic-recorder")
+    # # Streamlit's mic-recorder for microphone input
+    # audio_data = st_mic_recorder(record_audio=True, key="mic-recorder")
     
-    if audio_data is not None:
-        # Convert the audio data into an AudioFile object for speech recognition
-        audio_file = sr.AudioFile(audio_data)
-        with audio_file as source:
-            audio = r.record(source)  # Record the audio from the file
-            try:
-                voice_data = r.recognize_google(audio, language="en-uk")
-                st.write("You said: ", voice_data)
-                return voice_data
-            except sr.UnknownValueError:
-                st.write("Sorry, I did not get that.")
-            except sr.RequestError:
-                st.write("Sorry, my speech service is down.")
+    # if audio_data is not None:
+    #     # Convert the audio data into an AudioFile object for speech recognition
+    #     audio_file = sr.AudioFile(audio_data)
+    #     with audio_file as source:
+    #         audio = r.record(source)  # Record the audio from the file
+    #         try:
+    #             voice_data = r.recognize_google(audio, language="en-uk")
+    #             st.write("You said: ", voice_data)
+    #             return voice_data
+    #         except sr.UnknownValueError:
+    #             st.write("Sorry, I did not get that.")
+    #         except sr.RequestError:
+    #             st.write("Sorry, my speech service is down.")
 
+    # return ""
+    # Convert audio data to an AudioFile object
+    with sr.AudioFile(BytesIO(audio_data)) as source:
+        audio = r.record(source)
+        try:
+            voice_data = r.recognize_google(audio, language="en-uk")
+            st.write("You said: ", voice_data)
+            return voice_data
+        except sr.UnknownValueError:
+            st.write("Sorry, I did not get that.")
+        except sr.RequestError:
+            st.write("Sorry, my speech service is down.")
     return ""
     
 def respond(voice_data):
