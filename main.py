@@ -7,7 +7,7 @@ import playsound
 import os
 import random
 
-from mic_recorder import st_mic_recorder  # Import mic-recorder
+from streamlit_mic_recorder import st_mic_recorder  # Import mic-recorder
 from time import ctime
 from gtts import gTTS
 
