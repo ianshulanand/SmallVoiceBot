@@ -1,5 +1,6 @@
-gTTS
-SpeechRecognition
-playsound
-times
-pyaudio
+streamlit==1.19.0
+streamlit-mic-recorder==0.0.3
+speechrecognition==3.8.1
+gTTS==2.3.1
+playsound==1.2.2  # (Optional, if you still need it for local use)
+ipinfo==3.0.0
