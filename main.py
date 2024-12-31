@@ -49,13 +49,13 @@ def st_audiorec():
 
     return wav_bytes
     
-# Audio processor class for streamlit-webrtc
-class AudioProcessor(AudioProcessorBase):
-    def recv(self, frame):
-        global audio_data
-        # This function gets called with the microphone stream in each frame
-        audio_data = frame.to_bytes()  # Convert the frame to bytes
-        return frame
+# # Audio processor class for streamlit-webrtc
+# class AudioProcessor(AudioProcessorBase):
+#     def recv(self, frame):
+#         global audio_data
+#         # This function gets called with the microphone stream in each frame
+#         audio_data = frame.to_bytes()  # Convert the frame to bytes
+#         return frame
     
 def erza_speak(audio_string):
     tts = gTTS(text=audio_string, lang='en')
