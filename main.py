@@ -24,7 +24,8 @@ def erza_speak(audio_string):
     #audio_file = 'audio' +str(r) + '.mp3'
     mp3_file = f'audio{r}.mp3' #mp3 audio file
     tts.save(mp3_file) # save mp3 audio file
-    playsound.playsound(mp3_file)
+    #playsound.playsound(mp3_file)
+    st.audio(mp3_file, format="audio/mp3", autoplay=True)
 
     # Convert the MP3 to WAV for compatibility
     wav_file = f'audio{r}.wav' # We'll convert MP3 to WAV
